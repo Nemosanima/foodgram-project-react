@@ -131,4 +131,4 @@ dmypy.json
 # .idea
 .idea
 .DS_Store
-
+media/
