@@ -10,7 +10,7 @@ class Tag(models.Model):
 
     name = models.CharField(
         'Название',
-        max_length=50,
+        max_length=200,
         unique=True
     )
     color = models.CharField(
@@ -20,7 +20,7 @@ class Tag(models.Model):
     )
     slug = models.SlugField(
         'Адрес',
-        max_length=50,
+        max_length=200,
         unique=True
     )
 

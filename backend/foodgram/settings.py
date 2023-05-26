@@ -27,6 +27,9 @@ INSTALLED_APPS = [
     'api',
     'recipes',
     'users',
+    'rest_framework',
+    'rest_framework.authtoken',  # стандартная таблица от rest framework для авторизации по токенам
+    'djoser'
 ]
 
 MIDDLEWARE = [
@@ -101,3 +104,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
