@@ -28,6 +28,5 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name',
-        'amount',
         'measurement_unit'
     )

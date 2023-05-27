@@ -4,8 +4,7 @@ from recipes.models import Tag, Ingredient, Recipe
 from .serializers import TagSerializer, CustomUserSerializer, IngredientSerializer, GetRecipeSerializer
 from .mixins import ListRetrieveMixin
 from rest_framework.permissions import AllowAny
-from rest_framework import viewsets
-
+from rest_framework import viewsets, status
 
 
 User = get_user_model()
@@ -37,4 +36,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             return GetRecipeSerializer
+
+
 

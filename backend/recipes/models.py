@@ -39,9 +39,6 @@ class Ingredient(models.Model):
         'Название',
         max_length=200
     )
-    amount = models.IntegerField(
-        'Количество'
-    )
     measurement_unit = models.CharField(
         'Единица измерения',
         max_length=200
@@ -110,6 +107,30 @@ class Recipe(models.Model):
         return self.name
 
 
+class IngredientRecipe(models.Model):
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        verbose_name='Ингредиенты'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт'
+    )
+    amount = models.PositiveIntegerField(
+        'Количество',
+        validators=[MinValueValidator(1, message='Минимальное количесво ингредиентов 1.')]
+    )
+
+    class Meta:
+        verbose_name = 'Ингредиент в рецепте'
+        verbose_name_plural = 'Ингредиенты в рецепте'
+
+    def __str__(self):
+        return f'{self.ingredient.name} - {self.amount} {self.ingredient.measurement_unit}'
+
+
 class Favorite(models.Model):
     user = models.ForeignKey(
         User,
@@ -164,3 +185,6 @@ class ShoppingCart(models.Model):
 
     def __str__(self):
         return f'ShoppingCart >>> Пользователь {self.user.username} - рецепт {self.recipe.name}'
+
+
+
