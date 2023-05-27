@@ -4,7 +4,7 @@ from recipes.models import Tag
 from .serializers import TagSerializer
 from .mixins import ListRetrieveMixin
 from .serializers import CustomUserSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny
 
 
 User = get_user_model()
@@ -14,6 +14,7 @@ class TagViewSet(ListRetrieveMixin):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = None
+    permission_classes = [AllowAny]
 
 
 class CustomUserViewSet(UserViewSet):
