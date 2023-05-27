@@ -13,8 +13,10 @@ User = get_user_model()
 class TagViewSet(ListRetrieveMixin):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    pagination_class = None
 
 
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
+
