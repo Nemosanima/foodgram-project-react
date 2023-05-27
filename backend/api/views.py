@@ -3,8 +3,11 @@ from django.contrib.auth import get_user_model
 from recipes.models import Tag, Ingredient, Recipe
 from .serializers import TagSerializer, CustomUserSerializer, IngredientSerializer, GetRecipeSerializer
 from .mixins import ListRetrieveMixin
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 
 User = get_user_model()
@@ -34,6 +37,10 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
 
+    @action(detail=True, methods=['GER'], permission_classes=[IsAuthenticated])
+    def subscriptions(self, request):
+        return Response({'data': request.user})
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """ViewSet для рецептов."""
@@ -44,6 +51,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             return GetRecipeSerializer
+
+    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
+    def favorite(self, request, pk):
+        recipe = get_user_model(Recipe, id=pk)
+        pass
+
+
 
 
 

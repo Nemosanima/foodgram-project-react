@@ -112,9 +112,10 @@ class GetRecipeSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
+class FavoriteSerializer(serializers.ModelSerializer):
+    """Сериализатор для Favorite."""
 
-
-
-
+    class Meta:
+        pass
 
 
