@@ -8,7 +8,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'id',
         'author',
         'name',
-        'description',
+        'text',
         'cooking_time'
     )
 
@@ -29,5 +29,5 @@ class IngredientAdmin(admin.ModelAdmin):
         'id',
         'name',
         'amount',
-        'unit'
+        'measurement_unit'
     )

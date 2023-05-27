@@ -42,7 +42,7 @@ class Ingredient(models.Model):
     amount = models.IntegerField(
         'Количество'
     )
-    unit = models.CharField(
+    measurement_unit = models.CharField(
         'Единица измерения',
         max_length=50
     )
@@ -52,7 +52,7 @@ class Ingredient(models.Model):
         verbose_name_plural = 'Ингредиенты'
 
     def __str__(self):
-        return f'{self.name} - {self.amount}'
+        return self.name
 
 
 class Recipe(models.Model):
@@ -70,7 +70,7 @@ class Recipe(models.Model):
         'Картинка',
         upload_to='recipes/'
     )
-    description = models.TextField(
+    text = models.TextField(
         'Описание'
     )
     # through='RecipeIngredient'
