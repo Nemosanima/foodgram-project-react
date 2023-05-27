@@ -119,10 +119,14 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
+    'HIDE_USERS': False,  # для users/ GET вернет всех пользователей
     'SERIALIZERS': {
         'user_create': 'api.serializers.CustomUserCreateSerializer',  # для users/ POST
         'current_user': 'api.serializers.CustomUserSerializer',  # для users/me/
         'user': 'api.serializers.CustomUserSerializer',  # для users и users/{id}
-
+    },
+    'PERMISSIONS': {
+        'user_list': ['rest_framework.permissions.AllowAny']  # для users/ GET разрешено всем
     }
+
 }

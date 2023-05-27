@@ -4,6 +4,7 @@ from recipes.models import Tag
 from .serializers import TagSerializer
 from .mixins import ListRetrieveMixin
 from .serializers import CustomUserSerializer
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
 User = get_user_model()
