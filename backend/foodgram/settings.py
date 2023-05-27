@@ -126,7 +126,8 @@ DJOSER = {
         'user': 'api.serializers.CustomUserSerializer',  # для users и users/{id}
     },
     'PERMISSIONS': {
-        'user_list': ['rest_framework.permissions.AllowAny']  # для users/ GET разрешено всем
+        'user_list': ['rest_framework.permissions.AllowAny'],  # для users/ GET разрешено всем
+        'user': ['rest_framework.permissions.IsAuthenticated']  # для users/{id}/ GET разрешено только с токеном
     }
 
 }
