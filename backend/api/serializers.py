@@ -9,6 +9,11 @@ User = get_user_model()
 
 
 class CustomUserSerializer(UserSerializer):
+    """
+    Кастомный сериализатор для эндпоинтов
+    me/, users/ и users/{id}/.
+    """
+
     is_subscribed = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -23,6 +28,10 @@ class CustomUserSerializer(UserSerializer):
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
+    """
+    Кастомный сериализатор для эндпоинта
+    users/ при HTTP POST.
+    """
 
     class Meta:
         model = User
@@ -30,18 +39,24 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
+    """Сериализатор для тегов."""
+
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+    """Сериализатор для ингредиентов."""
+
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
 
 
 class GetIngredientRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор для GetRecipeSerializer."""
+
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     measurement_unit = serializers.SerializerMethodField()
@@ -65,6 +80,8 @@ class GetIngredientRecipeSerializer(serializers.ModelSerializer):
 
 
 class GetRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор для HTTP GET на эндпоинт recipes/."""
+
     tags = TagSerializer(read_only=True, many=True)
     author = CustomUserSerializer(read_only=True)
     ingredients = serializers.SerializerMethodField(read_only=True)

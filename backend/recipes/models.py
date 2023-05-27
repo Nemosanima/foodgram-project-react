@@ -33,7 +33,7 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    """Модель ингридиентов для рецептов."""
+    """Модель ингредиентов для рецептов."""
 
     name = models.CharField(
         'Название',
@@ -72,9 +72,9 @@ class Recipe(models.Model):
     text = models.TextField(
         'Описание'
     )
-    # through='RecipeIngredient'
     ingredients = models.ManyToManyField(
         Ingredient,
+        through='IngredientRecipe',
         verbose_name='Ингредиенты'
     )
     tags = models.ManyToManyField(
@@ -108,6 +108,9 @@ class Recipe(models.Model):
 
 
 class IngredientRecipe(models.Model):
+    """Модель для связи между рецептами и ингредиентами.
+    А также количество ингедиентов."""
+
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
@@ -132,6 +135,8 @@ class IngredientRecipe(models.Model):
 
 
 class Favorite(models.Model):
+    """Модель для избранных рецептов."""
+
     user = models.ForeignKey(
         User,
         related_name='user_favorites',
@@ -160,6 +165,8 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
+    """Модель для списка покупок пользователя."""
+
     user = models.ForeignKey(
         User,
         related_name='user_shopping_cart',

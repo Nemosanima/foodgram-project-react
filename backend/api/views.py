@@ -11,6 +11,8 @@ User = get_user_model()
 
 
 class TagViewSet(ListRetrieveMixin):
+    """ViewSet для тегов."""
+
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = None
@@ -18,6 +20,8 @@ class TagViewSet(ListRetrieveMixin):
 
 
 class IngredientViewSet(ListRetrieveMixin):
+    """ViewSet для ингредиентов."""
+
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
@@ -25,11 +29,15 @@ class IngredientViewSet(ListRetrieveMixin):
 
 
 class CustomUserViewSet(UserViewSet):
+    """ViewSet для пользователей."""
+
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    """ViewSet для рецептов."""
+
     queryset = Recipe.objects.all()
     permission_classes = [AllowAny]
 
