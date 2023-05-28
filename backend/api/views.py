@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from recipes.models import Favorite, ShoppingCart, RecipeIngredient
 from django.db.models import Sum
+from django.http import HttpResponse
 
 
 User = get_user_model()
@@ -93,7 +94,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ingredients = RecipeIngredient.objects.filter(
             recipe__in=recipes_id
         ).values('ingredient').annotate(amount=Sum('amount'))
-        final_list = 'Список покупок от Foodgram\n\n\n'
+        final_list = 'Список покупок от Foodgram\n\n'
         for item in ingredients:
             ingredient = Ingredient.objects.get(id=item.get('ingredient'))
             amount = item.get('amount')
@@ -101,7 +102,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 f'{ingredient.name} ({ingredient.measurement_unit}) {amount}\n'
             )
 
-        return Response({'data': final_list})
+        filename = 'Foodgram_shopping_list.txt'
+        response = HttpResponse(final_list, content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
+        return response
+
+
 
 
 
