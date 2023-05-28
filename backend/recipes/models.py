@@ -63,7 +63,7 @@ class Recipe(models.Model):
     )
     name = models.CharField(
         'Название',
-        max_length=50
+        max_length=200
     )
     image = models.ImageField(
         'Картинка',

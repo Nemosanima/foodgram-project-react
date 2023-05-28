@@ -1,13 +1,14 @@
 from djoser.views import UserViewSet
 from django.contrib.auth import get_user_model
 from recipes.models import Tag, Ingredient, Recipe
-from .serializers import TagSerializer, CustomUserSerializer, IngredientSerializer, GetRecipeSerializer
+from .serializers import TagSerializer, CustomUserSerializer, IngredientSerializer, GetRecipeSerializer, ShortRecipeSerializer
 from .mixins import ListRetrieveMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, exceptions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from recipes.models import Favorite
 
 
 User = get_user_model()
@@ -37,7 +38,7 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
 
-    @action(detail=True, methods=['GER'], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['GET'], permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         return Response({'data': request.user})
 
@@ -52,10 +53,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return GetRecipeSerializer
 
-    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
-    def favorite(self, request, pk):
-        recipe = get_user_model(Recipe, id=pk)
-        pass
+    @action(detail=True, methods=('POST', 'DELETE'), permission_classes = [IsAuthenticated])
+    def favorite(self, request, pk=None):
+        user = self.request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
+        if request.method == 'POST':
+            if Favorite.objects.filter(user=user, recipe=recipe).exists():
+                raise exceptions.ValidationError('Рецепт уже добавлен в избранное.')
+            Favorite.objects.create(user=user, recipe=recipe)
+            serializer = ShortRecipeSerializer(instance=recipe, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+
 
 
 

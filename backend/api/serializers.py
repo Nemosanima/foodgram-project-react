@@ -112,10 +112,11 @@ class GetRecipeSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class FavoriteSerializer(serializers.ModelSerializer):
-    """Сериализатор для Favorite."""
+class ShortRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор модели Recipe для добавления в Favorite."""
 
     class Meta:
-        pass
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
 
 
