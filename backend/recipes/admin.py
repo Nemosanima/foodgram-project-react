@@ -1,14 +1,9 @@
 from django.contrib import admin
-from .models import Recipe, Tag, Ingredient
+from .models import Recipe, Tag, Ingredient, Favorite, ShoppingCart
 
 
 class RecipeIngredientsInLine(admin.TabularInline):
     model = Recipe.ingredients.through
-    extra = 1
-
-
-class RecipeTagsInLine(admin.TabularInline):
-    model = Recipe.tags.through
     extra = 1
 
 
@@ -21,7 +16,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'text',
         'cooking_time'
     )
-    inlines = (RecipeIngredientsInLine, RecipeTagsInLine)
+    inlines = (RecipeIngredientsInLine,)
 
 
 @admin.register(Tag)
@@ -40,4 +35,22 @@ class IngredientAdmin(admin.ModelAdmin):
         'id',
         'name',
         'measurement_unit'
+    )
+
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'recipe'
+    )
+
+
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'recipe'
     )

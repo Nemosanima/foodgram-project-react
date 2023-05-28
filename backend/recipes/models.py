@@ -192,6 +192,3 @@ class ShoppingCart(models.Model):
 
     def __str__(self):
         return f'ShoppingCart >>> Пользователь {self.user.username} - рецепт {self.recipe.name}'
-
-
-
