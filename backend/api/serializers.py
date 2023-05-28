@@ -5,7 +5,6 @@ from users.models import Follow
 from django.contrib.auth import get_user_model
 from drf_extra_fields.fields import Base64ImageField
 from django.shortcuts import get_object_or_404
-from django.core.validators import MinValueValidator
 
 
 User = get_user_model()
@@ -123,10 +122,9 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+class ShortIngredientSerializerForRecipe(serializers.ModelSerializer):
+    """Сериализатор для PostRecipeSerializer."""
 
-
-class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     amount = serializers.IntegerField()
 
@@ -136,12 +134,14 @@ class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
 
 
 class PostRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор для рецептов: post, delete, patch http методы."""
+
     author = CustomUserSerializer(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
     )
-    ingredients = CreateUpdateRecipeIngredientsSerializer(many=True)
+    ingredients = ShortIngredientSerializerForRecipe(many=True)
     image = Base64ImageField()
     cooking_time = serializers.IntegerField()
 
@@ -219,4 +219,3 @@ class PostRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         exclude = ('created',)
-

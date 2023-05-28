@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from recipes.models import Favorite, ShoppingCart, RecipeIngredient
 from django.db.models import Sum
 from django.http import HttpResponse
+from .permissions import IsAuthorOrReadOnly
 
 
 User = get_user_model()
@@ -51,7 +52,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """ViewSet для рецептов."""
 
     queryset = Recipe.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthorOrReadOnly]
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
