@@ -8,7 +8,7 @@ from rest_framework import viewsets, status, exceptions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from recipes.models import Favorite
+from recipes.models import Favorite, ShoppingCart
 
 
 User = get_user_model()
@@ -59,7 +59,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
             if Favorite.objects.filter(user=user, recipe=recipe).exists():
-                raise exceptions.ValidationError('Рецепт уже добавлен в избранное.')
+                raise exceptions.ValidationError('Рецепт уже есть в избранном.')
             Favorite.objects.create(user=user, recipe=recipe)
             serializer = ShortRecipeSerializer(instance=recipe, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -69,14 +69,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
             Favorite.objects.filter(user=user, recipe=recipe).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-
-
-
-
-
-
-
-
+    @action(detail=True, methods=('POST', 'DELETE'), permission_classes=[IsAuthenticated])
+    def shopping_cart(self, request, pk=None):
+        user = self.request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
+        if request.method == 'POST':
+            if ShoppingCart.objects.filter(user=user, recipe=recipe).exists():
+                raise exceptions.ValidationError('Рецепт уже есть в списке покупок.')
+            ShoppingCart.objects.create(user=user, recipe=recipe)
+            serializer = ShortRecipeSerializer(instance=recipe, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE':
+            if not ShoppingCart.objects.filter(user=user, recipe=recipe).exists():
+                raise exceptions.ValidationError('Рецепта нет в списке покупок.')
+            ShoppingCart.objects.filter(user=user, recipe=recipe).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 

@@ -113,7 +113,7 @@ class GetRecipeSerializer(serializers.ModelSerializer):
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
-    """Сериализатор модели Recipe для добавления в Favorite."""
+    """Сериализатор модели Recipe для добавления в Favorite и ShoppingCart."""
 
     class Meta:
         model = Recipe

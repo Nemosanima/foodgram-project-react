@@ -132,5 +132,4 @@ DJOSER = {
         'user_list': ['rest_framework.permissions.AllowAny'],  # для users/ GET разрешено всем
         'user': ['rest_framework.permissions.IsAuthenticated']  # для users/{id}/ GET разрешено только с токеном
     }
-
 }
