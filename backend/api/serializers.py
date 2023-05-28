@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from djoser.serializers import UserSerializer, UserCreateSerializer
 from recipes.models import Tag, Ingredient, Recipe, Favorite, ShoppingCart, RecipeIngredient
 from users.models import Follow
@@ -123,34 +123,117 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class ShortRecipeIngredientSerializer(serializers.ModelSerializer):
-    """Сериализатор для PostRecipeSerializer."""
-    id = serializers.PrimaryKeyRelatedField(
-        queryset=Ingredient.objects.all()
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    amount = serializers.IntegerField(
+        validators=(
+            MinValueValidator(
+                1,
+                message='Количество ингредиента должно быть 1 или более.'
+            ),
+        )
     )
 
     class Meta:
-        model = RecipeIngredient
+        model = Ingredient
         fields = ('id', 'amount')
 
 
 class PostRecipeSerializer(serializers.ModelSerializer):
-    """Сериализатор Recipe для добавления."""
-
-    ingredients = ShortRecipeIngredientSerializer(many=True)
-    tags = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Tag.objects.all()
-    )
-    image = Base64ImageField()
     author = CustomUserSerializer(read_only=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True
+    )
+    ingredients = CreateUpdateRecipeIngredientsSerializer(many=True)
+    image = Base64ImageField()
+    cooking_time = serializers.IntegerField(
+        validators=(
+            MinValueValidator(
+                1,
+                message='Время приготовления должно быть 1 или более.'
+            ),
+        )
+    )
+
+    def validate_tags(self, value):
+        if not value:
+            raise exceptions.ValidationError(
+                'Нужно добавить хотя бы один тег.'
+            )
+
+        return value
+
+    def validate_ingredients(self, value):
+        if not value:
+            raise exceptions.ValidationError(
+                'Нужно добавить хотя бы один ингредиент.'
+            )
+
+        ingredients = [item['id'] for item in value]
+        for ingredient in ingredients:
+            if ingredients.count(ingredient) > 1:
+                raise exceptions.ValidationError(
+                    'У рецепта не может быть два одинаковых ингредиента.'
+                )
+
+        return value
+
+    def create(self, validated_data):
+        author = self.context.get('request').user
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+
+        recipe = Recipe.objects.create(author=author, **validated_data)
+        recipe.tags.set(tags)
+
+        for ingredient in ingredients:
+            amount = ingredient['amount']
+            ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
+
+            RecipeIngredient.objects.create(
+                recipe=recipe,
+                ingredient=ingredient,
+                amount=amount
+            )
+
+        return recipe
+
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tags', None)
+        if tags is not None:
+            instance.tags.set(tags)
+
+        ingredients = validated_data.pop('ingredients', None)
+        if ingredients is not None:
+            instance.ingredients.clear()
+
+            for ingredient in ingredients:
+                amount = ingredient['amount']
+                ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
+
+                RecipeIngredient.objects.update_or_create(
+                    recipe=instance,
+                    ingredient=ingredient,
+                    defaults={'amount': amount}
+                )
+
+        return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        serializer = GetRecipeSerializer(
+            instance,
+            context={'request': self.context.get('request')}
+        )
+
+        return serializer.data
 
     class Meta:
         model = Recipe
-        fields = ('ingredients', 'tags', 'image', 'name', 'text', 'cooking_time')
-
-    def create(self, validated_data):
-        pass
+        exclude = ('created',)
 
 
 
@@ -159,38 +242,4 @@ class PostRecipeSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
-
-
-    # def create(self, validated_data):
-    #     tags = validated_data.pop('tags')
-    #     ingredients = validated_data.pop('ingredients')
-    #     author = self.context.get('request').user
-    #
-    #     recipe = Recipe.objects.create(author=author, **validated_data)
-    #     recipe.tags.set(tags)
-    #
-    #     for ingredient in ingredients:
-    #         amount = ingredient['amount']
-    #         ingredient = get_object_or_404(Ingredient, id=ingredients['id'])
-    #
-    #         RecipeIngredient.objects.create(amount=amount, ingredient=ingredient, recipe=recipe)
-    #
-    #     return recipe
-
-    # def validate_cooking_time(self, value):
-    #     if not 1 <= value <= 360:
-    #         raise serializers.ValidationError('Время приготовления должно быть от 1 минуты до 360 минут.')
-    #
-    # def validated_ingredients(self, value):
-    #     if not value:
-    #         raise serializers.ValidationError('У рецепта обязательно должен быть хотябы один ингредиент')
-    #
-    #     ingredients_id = [ingredient['id'] for ingredient in value]
-    #     for id in ingredients_id:
-    #         if ingredients_id.count(id) > 1:
-    #             raise serializers.ValidationError('Нельзя задовать два одинаковых ингредиента.')
 
