@@ -3,6 +3,9 @@ from djoser.serializers import UserSerializer, UserCreateSerializer
 from recipes.models import Tag, Ingredient, Recipe, Favorite, ShoppingCart, RecipeIngredient
 from users.models import Follow
 from django.contrib.auth import get_user_model
+from drf_extra_fields.fields import Base64ImageField
+from django.shortcuts import get_object_or_404
+from django.core.validators import MinValueValidator
 
 
 User = get_user_model()
@@ -80,7 +83,7 @@ class GetIngredientRecipeSerializer(serializers.ModelSerializer):
 
 
 class GetRecipeSerializer(serializers.ModelSerializer):
-    """Сериализатор для HTTP GET на эндпоинт recipes/."""
+    """Сериализатор Recipe для чтения."""
 
     tags = TagSerializer(read_only=True, many=True)
     author = CustomUserSerializer(read_only=True)
@@ -119,4 +122,75 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
 
+
+class ShortRecipeIngredientSerializer(serializers.ModelSerializer):
+    """Сериализатор для PostRecipeSerializer."""
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all()
+    )
+
+    class Meta:
+        model = RecipeIngredient
+        fields = ('id', 'amount')
+
+
+class PostRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор Recipe для добавления."""
+
+    ingredients = ShortRecipeIngredientSerializer(many=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Tag.objects.all()
+    )
+    image = Base64ImageField()
+    author = CustomUserSerializer(read_only=True)
+
+    class Meta:
+        model = Recipe
+        fields = ('ingredients', 'tags', 'image', 'name', 'text', 'cooking_time')
+
+    def create(self, validated_data):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # def create(self, validated_data):
+    #     tags = validated_data.pop('tags')
+    #     ingredients = validated_data.pop('ingredients')
+    #     author = self.context.get('request').user
+    #
+    #     recipe = Recipe.objects.create(author=author, **validated_data)
+    #     recipe.tags.set(tags)
+    #
+    #     for ingredient in ingredients:
+    #         amount = ingredient['amount']
+    #         ingredient = get_object_or_404(Ingredient, id=ingredients['id'])
+    #
+    #         RecipeIngredient.objects.create(amount=amount, ingredient=ingredient, recipe=recipe)
+    #
+    #     return recipe
+
+    # def validate_cooking_time(self, value):
+    #     if not 1 <= value <= 360:
+    #         raise serializers.ValidationError('Время приготовления должно быть от 1 минуты до 360 минут.')
+    #
+    # def validated_ingredients(self, value):
+    #     if not value:
+    #         raise serializers.ValidationError('У рецепта обязательно должен быть хотябы один ингредиент')
+    #
+    #     ingredients_id = [ingredient['id'] for ingredient in value]
+    #     for id in ingredients_id:
+    #         if ingredients_id.count(id) > 1:
+    #             raise serializers.ValidationError('Нельзя задовать два одинаковых ингредиента.')
 

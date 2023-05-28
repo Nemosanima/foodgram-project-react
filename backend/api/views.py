@@ -1,9 +1,11 @@
 from djoser.views import UserViewSet
 from django.contrib.auth import get_user_model
 from recipes.models import Tag, Ingredient, Recipe
-from .serializers import TagSerializer, CustomUserSerializer, IngredientSerializer, GetRecipeSerializer, ShortRecipeSerializer
+from .serializers import (TagSerializer, CustomUserSerializer,
+                          IngredientSerializer, GetRecipeSerializer,
+                          ShortRecipeSerializer, PostRecipeSerializer)
 from .mixins import ListRetrieveMixin
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework import viewsets, status, exceptions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -49,11 +51,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """ViewSet для рецептов."""
 
     queryset = Recipe.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             return GetRecipeSerializer
+        return PostRecipeSerializer
 
     @action(detail=True, methods=('POST', 'DELETE'), permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
@@ -102,17 +105,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 f'{ingredient.name} ({ingredient.measurement_unit}) {amount}\n'
             )
 
-        filename = 'Foodgram_shopping_list.txt'
-        response = HttpResponse(final_list, content_type='text/plain')
+        filename = 'foodgram_shopping_list.txt'
+        response = HttpResponse(final_list[:-1], content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
         return response
-
-
-
-
-
-
-
-        #return Response({'data': buy_list})
-
-
