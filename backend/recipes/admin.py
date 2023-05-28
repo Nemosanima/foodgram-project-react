@@ -2,6 +2,16 @@ from django.contrib import admin
 from .models import Recipe, Tag, Ingredient
 
 
+class RecipeIngredientsInLine(admin.TabularInline):
+    model = Recipe.ingredients.through
+    extra = 1
+
+
+class RecipeTagsInLine(admin.TabularInline):
+    model = Recipe.tags.through
+    extra = 1
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
@@ -11,6 +21,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'text',
         'cooking_time'
     )
+    inlines = (RecipeIngredientsInLine, RecipeTagsInLine)
 
 
 @admin.register(Tag)

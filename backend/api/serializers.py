@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from djoser.serializers import UserSerializer, UserCreateSerializer
-from recipes.models import Tag, Ingredient, Recipe, Favorite, ShoppingCart, IngredientRecipe
+from recipes.models import Tag, Ingredient, Recipe, Favorite, ShoppingCart, RecipeIngredient
 from users.models import Follow
 from django.contrib.auth import get_user_model
 
@@ -63,7 +63,7 @@ class GetIngredientRecipeSerializer(serializers.ModelSerializer):
     amount = serializers.SerializerMethodField()
 
     class Meta:
-        model = IngredientRecipe
+        model = RecipeIngredient
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
     def get_id(self, obj):
@@ -107,7 +107,7 @@ class GetRecipeSerializer(serializers.ModelSerializer):
 
     def get_ingredients(self, obj):
         recipe = obj
-        ingredients = IngredientRecipe.objects.filter(recipe=recipe)
+        ingredients = RecipeIngredient.objects.filter(recipe=recipe)
         serializer = GetIngredientRecipeSerializer(ingredients, many=True)
         return serializer.data
 

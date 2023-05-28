@@ -8,7 +8,8 @@ from rest_framework import viewsets, status, exceptions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from recipes.models import Favorite, ShoppingCart
+from recipes.models import Favorite, ShoppingCart, RecipeIngredient
+from django.db.models import Sum
 
 
 User = get_user_model()
@@ -84,5 +85,28 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 raise exceptions.ValidationError('Рецепта нет в списке покупок.')
             ShoppingCart.objects.filter(user=user, recipe=recipe).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
+    def download_shopping_cart(self, request):
+        shopping_cart = ShoppingCart.objects.filter(user=request.user)
+        recipes_id = [item.recipe.id for item in shopping_cart]
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__in=recipes_id
+        ).values('ingredient').annotate(amount=Sum('amount'))
+        final_list = 'Список покупок от Foodgram\n\n\n'
+        for item in ingredients:
+            ingredient = Ingredient.objects.get(id=item.get('ingredient'))
+            amount = item.get('amount')
+            final_list += (
+                f'{ingredient.name} ({ingredient.measurement_unit}) {amount}\n'
+            )
+
+        return Response({'data': final_list})
+
+
+
+
+
+        #return Response({'data': buy_list})
 
 
