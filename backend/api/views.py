@@ -53,7 +53,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return GetRecipeSerializer
 
-    @action(detail=True, methods=('POST', 'DELETE'), permission_classes = [IsAuthenticated])
+    @action(detail=True, methods=('POST', 'DELETE'), permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
@@ -63,6 +63,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             Favorite.objects.create(user=user, recipe=recipe)
             serializer = ShortRecipeSerializer(instance=recipe, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE':
+            if not Favorite.objects.filter(user=user, recipe=recipe).exists():
+                raise exceptions.ValidationError('Рецепта нет в ибранном.')
+            Favorite.objects.filter(user=user, recipe=recipe).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 
 
