@@ -17,6 +17,7 @@ from .permissions import IsAuthorOrReadOnly
 from rest_framework.pagination import LimitOffsetPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import CustomFilterForRecipes
+from users.models import Follow
 
 
 User = get_user_model()
@@ -46,15 +47,43 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
 
-    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated], serializer_class=None)
+    @action(
+        detail=False,
+        methods=['GET'],
+        permission_classes=[IsAuthenticated],
+        serializer_class=SubscriptionSerializer
+    )
     def subscriptions(self, request):
         user = request.user
         favorites = user.followers.all()
         users_id = [favorite_instance.author.id for favorite_instance in favorites]
         users = User.objects.filter(id__in=users_id)
         paginated_queryset = self.paginate_queryset(users)
-        serializer = SubscriptionSerializer(paginated_queryset, many=True)
+        serializer = self.serializer_class(paginated_queryset, many=True)
         return self.get_paginated_response(serializer.data)
+
+    @action(
+        detail=True,
+        methods=('post', 'delete'),
+        serializer_class=SubscriptionSerializer
+    )
+    def subscribe(self, request, id=None):
+        user = request.user
+        author = get_object_or_404(User, pk=id)
+        if request.method == 'POST':
+            if user == author:
+                raise exceptions.ValidationError('Подписываться на себя запрещено')
+            if Follow.objects.filter(user=user, author=author).exists():
+                raise exceptions.ValidationError(f'Вы уже подписаны на этого пользователя.')
+            Follow.objects.create(user=user, author=author)
+            serializer = self.get_serializer(author)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        if request.method == 'DELETE':
+            if not Follow.objects.filter(user=user, author=author).exists():
+                raise exceptions.ValidationError('Вы не подписаны на этого пользователя')
+            Follow.objects.filter(user=user, author=author).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
