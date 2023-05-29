@@ -219,3 +219,22 @@ class PostRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         exclude = ('created',)
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    recipes = ShortRecipeSerializer(many=True, read_only=True)
+    recipes_count = serializers.SerializerMethodField(read_only=True)
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj).count()
+
+    def get_is_subscribed(self, obj):
+        return True
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'username', 'first_name',
+                  'last_name', 'is_subscribed', 'recipes', "recipes", 'recipes_count')
+
+

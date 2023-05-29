@@ -14,9 +14,22 @@ class RecipeAdmin(admin.ModelAdmin):
         'author',
         'name',
         'text',
-        'cooking_time'
+        'cooking_time',
+        'get_tags',
+        'get_favorite_count'
     )
     inlines = (RecipeIngredientsInLine,)
+    list_filter = ('author__email', 'tags', 'name')
+    search_fields = ('author__email', 'name',)
+
+    @admin.display(description='Тэги')
+    def get_tags(self, obj):
+        list_ = [_.name for _ in obj.tags.all()]
+        return ', '.join(list_)
+
+    @admin.display(description='В избранном')
+    def get_favorite_count(self, obj):
+        return Favorite.objects.filter(recipe=obj).count()
 
 
 @admin.register(Tag)
@@ -36,6 +49,7 @@ class IngredientAdmin(admin.ModelAdmin):
         'name',
         'measurement_unit'
     )
+    search_fields = ('name',)
 
 
 @admin.register(Favorite)

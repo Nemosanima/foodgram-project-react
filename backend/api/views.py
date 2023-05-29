@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from recipes.models import Tag, Ingredient, Recipe
 from .serializers import (TagSerializer, CustomUserSerializer,
                           IngredientSerializer, GetRecipeSerializer,
-                          ShortRecipeSerializer, PostRecipeSerializer)
+                          ShortRecipeSerializer, PostRecipeSerializer, SubscriptionSerializer)
 from .mixins import ListRetrieveMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import viewsets, status, exceptions
@@ -46,9 +46,15 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
 
-    @action(detail=True, methods=['GET'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated], serializer_class=None)
     def subscriptions(self, request):
-        return Response({'data': request.user})
+        user = request.user
+        favorites = user.followers.all()
+        users_id = [favorite_instance.author.id for favorite_instance in favorites]
+        users = User.objects.filter(id__in=users_id)
+        paginated_queryset = self.paginate_queryset(users)
+        serializer = SubscriptionSerializer(paginated_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
