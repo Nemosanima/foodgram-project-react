@@ -30,7 +30,8 @@ INSTALLED_APPS = [
     'users',
     'rest_framework',
     'rest_framework.authtoken',  # стандартная таблица от rest framework для авторизации по токенам
-    'djoser'
+    'djoser',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

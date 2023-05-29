@@ -5,7 +5,7 @@ from .serializers import (TagSerializer, CustomUserSerializer,
                           IngredientSerializer, GetRecipeSerializer,
                           ShortRecipeSerializer, PostRecipeSerializer)
 from .mixins import ListRetrieveMixin
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import viewsets, status, exceptions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -14,6 +14,9 @@ from recipes.models import Favorite, ShoppingCart, RecipeIngredient
 from django.db.models import Sum
 from django.http import HttpResponse
 from .permissions import IsAuthorOrReadOnly
+from rest_framework.pagination import LimitOffsetPagination
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import CustomFilterForRecipes
 
 
 User = get_user_model()
@@ -53,6 +56,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     permission_classes = [IsAuthorOrReadOnly]
+    pagination_class = LimitOffsetPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = CustomFilterForRecipes
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
