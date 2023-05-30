@@ -139,15 +139,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
         shopping_cart = ShoppingCart.objects.filter(user=request.user)
         recipes_id = [item.recipe.id for item in shopping_cart]
         ingredients = RecipeIngredient.objects.filter(
-            recipe__in=recipes_id
-        ).values('ingredient').annotate(amount=Sum('amount'))
+            recipe__in=recipes_id).values('ingredient__name', 'ingredient__measurement_unit'
+        ).annotate(amount=Sum('amount'))
         final_list = 'Список покупок от Foodgram\n\n'
+
         for item in ingredients:
-            ingredient = Ingredient.objects.get(id=item.get('ingredient'))
-            amount = item.get('amount')
-            final_list += (
-                f'{ingredient.name} ({ingredient.measurement_unit}) {amount}\n'
-            )
+            ingredient_name = item['ingredient__name']
+            measurement_unit = item['ingredient__measurement_unit']
+            amount = item['amount']
+            final_list += f'{ingredient_name} ({measurement_unit}) {amount}\n'
 
         filename = 'foodgram_shopping_list.txt'
         response = HttpResponse(final_list[:-1], content_type='text/plain')
