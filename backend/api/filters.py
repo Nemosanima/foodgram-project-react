@@ -1,6 +1,6 @@
 from django_filters import rest_framework
 
-from recipes.models import Favorite, Recipe, ShoppingCart, Tag, Ingredient
+from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 
 CHOICES_LIST = (
     ('0', 'False'),
@@ -9,6 +9,8 @@ CHOICES_LIST = (
 
 
 class CustomFilterForRecipes(rest_framework.FilterSet):
+    """Кастомная фильтрация для рецептов."""
+
     is_favorited = rest_framework.ChoiceFilter(
         method='is_favorited_method',
         choices=CHOICES_LIST
@@ -54,6 +56,8 @@ class CustomFilterForRecipes(rest_framework.FilterSet):
 
 
 class CustomFilterForIngredients(rest_framework.FilterSet):
+    """Кастомная фильтрация для ингредиентов."""
+
     name = rest_framework.CharFilter(lookup_expr='istartswith')
 
     class Meta:

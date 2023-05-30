@@ -13,14 +13,14 @@ from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
 from users.models import Follow
 
-from .filters import CustomFilterForRecipes, CustomFilterForIngredients
+from .filters import CustomFilterForIngredients, CustomFilterForRecipes
 from .mixins import ListRetrieveMixin
+from .pagination import CustomPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CustomUserSerializer, GetRecipeSerializer,
                           IngredientSerializer, PostRecipeSerializer,
                           ShortRecipeSerializer, SubscriptionSerializer,
                           TagSerializer)
-from .pagination import CustomPagination
 
 User = get_user_model()
 

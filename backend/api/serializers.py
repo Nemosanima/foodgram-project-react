@@ -33,7 +33,7 @@ class CustomUserSerializer(UserSerializer):
 class CustomUserCreateSerializer(UserCreateSerializer):
     """
     Кастомный сериализатор для эндпоинта
-    users/ при HTTP POST.
+    users/.
     """
 
     class Meta:
@@ -167,14 +167,13 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         return cooking_time
 
     def create(self, validated_data):
-        # Разделил данные
         author = self.context.get('request').user
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        # Создал рецепт и теги
+
         recipe = Recipe.objects.create(author=author, **validated_data)
         recipe.tags.set(tags)
-        # Создал ингредиенты
+
         for ingredient in ingredients:
             amount = ingredient['amount']
             ingredient_instance = ingredient['id']
@@ -188,11 +187,10 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        # Изменил теги
         tags = validated_data.pop('tags', None)
         if tags is not None:
             instance.tags.set(tags)
-        # Изменил ингредиенты
+
         ingredients = validated_data.pop('ingredients', None)
         if ingredients is not None:
             instance.ingredients.clear()
@@ -223,6 +221,8 @@ class PostRecipeSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
+    """Сериализатор для подписок."""
+
     recipes = ShortRecipeSerializer(many=True, read_only=True)
     recipes_count = serializers.SerializerMethodField(read_only=True)
     is_subscribed = serializers.SerializerMethodField(read_only=True)
