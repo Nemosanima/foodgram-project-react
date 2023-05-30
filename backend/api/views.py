@@ -1,24 +1,26 @@
-from djoser.views import UserViewSet
 from django.contrib.auth import get_user_model
-from recipes.models import Tag, Ingredient, Recipe
-from .serializers import (TagSerializer, CustomUserSerializer,
-                          IngredientSerializer, GetRecipeSerializer,
-                          ShortRecipeSerializer, PostRecipeSerializer, SubscriptionSerializer)
-from .mixins import ListRetrieveMixin
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import viewsets, status, exceptions
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from recipes.models import Favorite, ShoppingCart, RecipeIngredient
 from django.db.models import Sum
 from django.http import HttpResponse
-from .permissions import IsAuthorOrReadOnly
-from rest_framework.pagination import LimitOffsetPagination
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from .filters import CustomFilterForRecipes
+from djoser.views import UserViewSet
+from rest_framework import exceptions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag)
 from users.models import Follow
 
+from .filters import CustomFilterForRecipes, CustomFilterForIngredients
+from .mixins import ListRetrieveMixin
+from .permissions import IsAuthorOrReadOnly
+from .serializers import (CustomUserSerializer, GetRecipeSerializer,
+                          IngredientSerializer, PostRecipeSerializer,
+                          ShortRecipeSerializer, SubscriptionSerializer,
+                          TagSerializer)
+from .pagination import CustomPagination
 
 User = get_user_model()
 
@@ -28,7 +30,6 @@ class TagViewSet(ListRetrieveMixin):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    pagination_class = None
     permission_classes = [AllowAny]
 
 
@@ -37,8 +38,8 @@ class IngredientViewSet(ListRetrieveMixin):
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    pagination_class = None
     permission_classes = [AllowAny]
+    filterset_class = CustomFilterForIngredients
 
 
 class CustomUserViewSet(UserViewSet):
@@ -46,6 +47,7 @@ class CustomUserViewSet(UserViewSet):
 
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
+    pagination_class = CustomPagination
 
     @action(
         detail=False,
@@ -72,16 +74,16 @@ class CustomUserViewSet(UserViewSet):
         author = get_object_or_404(User, pk=id)
         if request.method == 'POST':
             if user == author:
-                raise exceptions.ValidationError('Подписываться на себя запрещено')
+                raise exceptions.ValidationError('Подписываться на себя запрещено.')
             if Follow.objects.filter(user=user, author=author).exists():
-                raise exceptions.ValidationError(f'Вы уже подписаны на этого пользователя.')
+                raise exceptions.ValidationError('Вы уже подписаны на этого пользователя.')
             Follow.objects.create(user=user, author=author)
             serializer = self.get_serializer(author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE':
             if not Follow.objects.filter(user=user, author=author).exists():
-                raise exceptions.ValidationError('Вы не подписаны на этого пользователя')
+                raise exceptions.ValidationError('Вы не подписаны на этого пользователя.')
             Follow.objects.filter(user=user, author=author).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -91,7 +93,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     permission_classes = [IsAuthorOrReadOnly]
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = CustomFilterForRecipes
 
@@ -151,5 +153,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         response = HttpResponse(final_list[:-1], content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
         return response
-
-

@@ -1,5 +1,6 @@
 from django_filters import rest_framework
-from recipes.models import Tag, Favorite, ShoppingCart, Recipe
+
+from recipes.models import Favorite, Recipe, ShoppingCart, Tag, Ingredient
 
 CHOICES_LIST = (
     ('0', 'False'),
@@ -50,3 +51,11 @@ class CustomFilterForRecipes(rest_framework.FilterSet):
     class Meta:
         model = Recipe
         fields = ('author', 'tags')
+
+
+class CustomFilterForIngredients(rest_framework.FilterSet):
+    name = rest_framework.CharFilter(lookup_expr='istartswith')
+
+    class Meta:
+        model = Ingredient
+        fields = ('name',)

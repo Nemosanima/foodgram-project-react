@@ -1,7 +1,5 @@
 import os
-
 from pathlib import Path
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,6 +30,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',  # стандартная таблица от rest framework для авторизации по токенам
     'djoser',
     'django_filters',
+    'django_cleanup.apps.CleanupConfig',  # для очистки ImageFiles
 ]
 
 MIDDLEWARE = [
@@ -116,9 +115,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 6,
-    'PAGINATE_BY_PARAM': 'limit',
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'PAGE_SIZE': 6
 }
 
 DJOSER = {
