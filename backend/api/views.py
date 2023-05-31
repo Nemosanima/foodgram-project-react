@@ -72,17 +72,20 @@ class CustomUserViewSet(UserViewSet):
     def subscribe(self, request, id=None):
         user = request.user
         author = get_object_or_404(User, pk=id)
+
+        follow_search = Follow.objects.filter(user=user, author=author)
+
         if request.method == 'POST':
             if user == author:
                 raise exceptions.ValidationError('Подписываться на себя запрещено.')
-            if Follow.objects.filter(user=user, author=author).exists():
+            if follow_search.exists():
                 raise exceptions.ValidationError('Вы уже подписаны на этого пользователя.')
             Follow.objects.create(user=user, author=author)
             serializer = self.get_serializer(author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE':
-            if not Follow.objects.filter(user=user, author=author).exists():
+            if not follow_search.exists():
                 raise exceptions.ValidationError('Вы не подписаны на этого пользователя.')
             Follow.objects.filter(user=user, author=author).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
