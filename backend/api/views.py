@@ -89,7 +89,7 @@ class CustomUserViewSet(UserViewSet):
 
 
 class FavoriteShoppingCartMixin:
-    """Миксин для favorite и shopping_cart
+    """Вынес общее для favorite и shopping_cart
     http методы post и delete.
     """
 
@@ -140,10 +140,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
             error_message = 'Рецепт уже есть в списке покупок.'
-            return FavoriteShoppingCartMixin.create(Favorite, pk, request, error_message)
+            return FavoriteShoppingCartMixin.create(ShoppingCart, pk, request, error_message)
         elif request.method == 'DELETE':
             error_message = 'Рецепта нет в списке покупок.'
-            return FavoriteShoppingCartMixin.delete(Favorite, pk, request, error_message)
+            return FavoriteShoppingCartMixin.delete(ShoppingCart, pk, request, error_message)
 
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
@@ -196,4 +196,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
     #             raise exceptions.ValidationError('Рецепта нет в списке покупок.')
     #         ShoppingCart.objects.filter(user=user, recipe=recipe).delete()
     #         return Response(status=status.HTTP_204_NO_CONTENT)
-
