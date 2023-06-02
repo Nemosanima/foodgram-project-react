@@ -11,7 +11,7 @@ services:
       - ./.env
 
   backend:
-    image: nemosanima/footgram_backend_local
+    image: nemosanima/footgram_backend_local:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -22,7 +22,7 @@ services:
       - ./.env
 
   frontend:
-    image: nemosanima/footgram_frontend_local
+    image: nemosanima/footgram_frontend_local:latest
     volumes:
       # локальная директория "../frontend/" будет монтироваться в путь
       # "/app/result_build/" внутри контейнера.
