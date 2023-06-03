@@ -68,8 +68,8 @@ POSTGRES_USER
 POSTGRES_PASSWORD
 DB_HOST
 DB_PORT
-TELEGRAM_TO  # не обязательно
-TELEGRAM_TOKEN  # не обязательно
+TELEGRAM_TO
+TELEGRAM_TOKEN
 ```
 #### Покдлючитесь к серверу
 ```
