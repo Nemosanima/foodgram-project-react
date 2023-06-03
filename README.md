@@ -5,6 +5,8 @@
 
 Foodgram - это сервис, который позволяет пользователям публиковать рецепты, подписываться на других пользователей, добавлять любимые рецепты в список "Избранное" и скачивать сводный список продуктов перед походом в магазин для приготовления выбранных блюд. Foodgram предоставляет удобную платформу для обмена рецептами и вдохновения в кулинарной области. Это место, где пользователи могут делиться своими любимыми блюдами, находить новые идеи для готовки и наслаждаться кулинарным опытом в сообществе единомышленников.
 
+![Index](https://github.com/Nemosanima/foodgram-project-react/blob/master/images/index.png)
+
 ## Основной стек
 
 - #### Django
@@ -76,17 +78,20 @@ sudo chmod +x /usr/local/bin/docker-compose
 ```
 sudo systemctl start docker.service && sudo systemctl enable docker.service
 ```
-#### Создайте папку infra
+#### Создайте папку infra и docs
 ```
 cd ~
 mkdir infra
+mkdir docs
 ```
-#### Перенести файлы docker-compose.yml, nginx.conf и .env с вашего ПК на сервер.
+#### Перенести файлы docker-compose.yml, nginx.conf и .env, openapi-chema.yml и redoc.html с вашего ПК на сервер.
 Не забудьте добавить ip сервера в CSRF_TRUSTED_ORIGINS и ALLOWED_HOSTS
 ```
 scp docker-compose.yml username@server_ip:/home/username/infra/
 scp nginx.conf username@server_ip:/home/username/infra/
 scp .env username@server_ip:/home/username/infra/
+scp openapi-chema.yml username@server_ip:/home/username/docs/
+scp redoc.html username@server_ip:/home/username/docs/
 ```
 Пример файла .env
 ```
