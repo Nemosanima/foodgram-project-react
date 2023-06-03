@@ -99,3 +99,18 @@ jobs:
             sudo docker pull nemosanima/foodgram_frontend:latest
             sudo docker pull nemosanima/foodgram_backend:latest
             sudo docker-compose up -d
+  
+  send_massage:
+    runs-on: ubuntu-latest
+    needs:
+      - test_flake8
+      - build_and_push_backend_image_to_dockerhub
+      - build_and_push_frontend_image_to_dockerhub
+      - deploy
+    steps:
+      - name: Send message to Telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: ${{ github.workflow }} успешно выполнен :)

@@ -1,6 +1,19 @@
 # Foodgram
 ![example workflow](https://github.com/nemosanima/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
+## Описание
+
+Foodgram - это сервис, который позволяет пользователям публиковать рецепты, подписываться на других пользователей, добавлять любимые рецепты в список "Избранное" и скачивать сводный список продуктов перед походом в магазин для приготовления выбранных блюд. Foodgram предоставляет удобную платформу для обмена рецептами и вдохновения в кулинарной области. Это место, где пользователи могут делиться своими любимыми блюдами, находить новые идеи для готовки и наслаждаться кулинарным опытом в сообществе единомышленников.
+
+## Основной стек
+
+- #### Django
+- #### DRF
+- #### Postgres
+- #### Nginx
+- #### Docker Compose
+- #### React
+
 ## Инструкция для локального запуска
 
 #### Перейдите в директорию infra и выполните команду
@@ -104,16 +117,4 @@ sudo docker-compose exec <имя> python manage.py createsuperuser
 sudo docker exec -it <имя> python manage.py load_tags_json
 sudo docker exec -it <имя> python manage.py load_ingredients_json  # 50 рандомных ингредиентов
 sudo docker exec -it <имя> python manage.py load_ingredients_csv  # около 2х тысяч ингредиентов
-```
-#### Foodgram
-```
-sever_ip
-```
-#### Докементация по API
-```
-server_ip/api/docs/
-```
-#### Админка
-```
-server_ip/admin/
 ```
