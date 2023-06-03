@@ -1,4 +1,5 @@
 # Foodgram
+![example workflow](https://github.com/nemosanima/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
 ## Инструкция для локального запуска.
 
