@@ -64,7 +64,39 @@ jobs:
           push: true
           tags: nemosanima/foodgram_frontend:latest
 
+  deploy:
+    name: Deploy to a remote server
+    runs-on: ubuntu-latest
+    needs:
+      - test_flake8
+      - build_and_push_backend_image_to_dockerhub
+      - build_and_push_frontend_image_to_dockerhub
+    steps:
+      - name: Run command to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+        script:
+          cd infra/
+          sudo rm -f .env
+          sudo touch .env
+          sudo chmod 666 .env
+          
+          
+          sudo echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
+          sudo echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+          sudo echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+          sudo echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          sudo echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+          sudo echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+        
+          sudo docker-compose stop
+          sudo docker compose rm backend
+          sudo docker-compose rm frontend
 
-
-
-
+          sudo docker pull nemosanima/foodgram_frontend:latest
+          sudo docker pull nemosanima/foodgram_backend:latest
+          sudo docker-compose up -d
