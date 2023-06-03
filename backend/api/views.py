@@ -154,7 +154,7 @@ class RecipeViewSet(viewsets.ModelViewSet, FavoriteShoppingCartMixin):
         recipes_id = [item.recipe.id for item in shopping_cart]
         ingredients = RecipeIngredient.objects.filter(
             recipe__in=recipes_id).values('ingredient__name', 'ingredient__measurement_unit'
-        ).annotate(amount=Sum('amount'))
+                                          ).annotate(amount=Sum('amount'))
         final_list = 'Список покупок от Foodgram\n\n'
 
         for item in ingredients:
