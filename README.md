@@ -51,6 +51,26 @@ localhost/admin/
 
 ## Инструкция для запуска на удаленном сервере
 
+#### Secrets для CI/CD
+```
+# В Settings - Secrets and variables - Actions 
+добавьте secrets c вашими данными
+# Это необходимо для работы CI/CD, DockerHub, GitHub
+DOCKER_USERNAME
+DOCKER_USERNAME
+HOST
+USER
+SSH_KEY
+PASSPHRASE
+DB_ENGINE
+DB_NAME
+POSTGRES_USER
+POSTGRES_PASSWORD
+DB_HOST
+DB_PORT
+TELEGRAM_TO  # не обязательно
+TELEGRAM_TOKEN  # не обязательно
+```
 #### Покдлючитесь к серверу
 ```
 ssh username@server_ip
@@ -122,4 +142,16 @@ sudo docker-compose exec <имя> python manage.py createsuperuser
 sudo docker exec -it <имя> python manage.py load_tags_json
 sudo docker exec -it <имя> python manage.py load_ingredients_json  # 50 рандомных ингредиентов
 sudo docker exec -it <имя> python manage.py load_ingredients_csv  # около 2х тысяч ингредиентов
+```
+#### Foodgram
+```
+server_ip
+```
+#### Докементация по API
+```
+server_ip/api/docs/
+```
+#### Админка
+```
+server_ip/admin/
 ```
