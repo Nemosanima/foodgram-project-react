@@ -8,16 +8,16 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = 'django-insecure-5ah2h5%5xipa+@_^8&bg=oqvh#!f(p1lh(*3y5+6!_7fg7xeqy'
+SECRET_KEY = os.getenv(key='SECRET_KEY', default='1n2nn3nnn')
 
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'users.User'
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://localhost:8000']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://localhost:8000', 'http://158.160.18.190']
 
 # Application definition
 
