@@ -11,7 +11,7 @@ services:
       - ./.env
 
   backend:
-    image: nemosanima/footgram_backend_local:latest
+    image: nemosanima/foodgram_backend_local:latest
     restart: always
     volumes:
       - static_value:/app/static/

@@ -17,8 +17,8 @@ docker exec -it <имя> python manage.py migrate
 docker exec -it <имя> python manage.py collectstatic
 docker exec -it <имя> python manage.py createsuperuser
 docker exec -it <имя> python manage.py load_tags_json
-docker exec -it <имя> python manage.py load_ingredients_json  # 50 первых ингредиентов
-docker exec -it <имя> python manage.py load_ingredients_csv  # все игредиенты
+docker exec -it <имя> python manage.py load_ingredients_json  # 50 рандомных ингредиентов
+docker exec -it <имя> python manage.py load_ingredients_csv  # около 2х тысяч ингредиентов
 ```
 #### Foodgram
 ```
