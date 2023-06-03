@@ -105,7 +105,7 @@ mkdir infra
 mkdir docs
 ```
 #### Перенести файлы docker-compose.yml, nginx.conf и .env, openapi-chema.yml и redoc.html с вашего ПК на сервер.
-Не забудьте добавить ip сервера в CSRF_TRUSTED_ORIGINS и ALLOWED_HOSTS
+Не забудьте добавить ip сервера в server_name
 ```
 scp docker-compose.yml username@server_ip:/home/username/infra/
 scp nginx.conf username@server_ip:/home/username/infra/
@@ -123,6 +123,7 @@ DB_HOST=db
 DB_PORT=5432
 ```
 #### На своем ПК соберите образы для backend и frontend, запуште их на DockerHub и изменить docker-compose под свои images.
+Не забудьте добавить ip сервера в CSRF_TRUSTED_ORIGINS и ALLOWED_HOSTS
 ```
 docker login
 docker build -t username/название_образа:latest .
