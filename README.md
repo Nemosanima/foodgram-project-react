@@ -57,7 +57,7 @@ localhost/admin/
 добавьте secrets c вашими данными
 # Это необходимо для работы CI/CD, DockerHub, GitHub
 DOCKER_USERNAME
-DOCKER_USERNAME
+DOCKER_PASSWORD
 HOST
 USER
 SSH_KEY
@@ -122,7 +122,7 @@ POSTGRES_PASSWORD=postgres
 DB_HOST=db
 DB_PORT=5432
 ```
-#### На своем ПК соберите образы для backend и frontend, запуште их на DockerHub и изменить docker-compose под свои images.
+#### На своем ПК соберите образы для backend и frontend, запуште их на DockerHub и измените docker-compose под свои images.
 Не забудьте добавить ip сервера в CSRF_TRUSTED_ORIGINS и ALLOWED_HOSTS
 ```
 docker login
